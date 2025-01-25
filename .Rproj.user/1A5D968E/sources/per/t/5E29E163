@@ -1,0 +1,32 @@
+{
+    "id": "5E29E163",
+    "path": "~/raport/raport.qmd",
+    "project_path": "raport.qmd",
+    "type": "quarto_markdown",
+    "hash": "2684703735",
+    "contents": "",
+    "dirty": false,
+    "created": 1737736556112.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "source_window_id": "",
+        "Source": "Source",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "4507:2353",
+        "docOutlineVisible": "0",
+        "cursorPosition": "146,5",
+        "scrollLine": "121",
+        "docOutlineSize": "21"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1737747115,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1737747115879,
+    "read_only": false,
+    "read_only_alternatives": []
+}

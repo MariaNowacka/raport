@@ -1,0 +1,148 @@
+---
+title: "raport"
+---
+
+## Raport 2
+
+### Zuzanna Nasiłowska, Maria Nowacka
+
+#### Zadanie 1
+
+Rozważmy próbę $(X_1, ... X_{100})$ z rozkładu normalnego $𝒩 (2,\ 1)$ przekształconego przez transformatę Sinh-arcsinh z $\nu = 0$. Korzystając z symulacji Monte Carlo wykonaj wykres funkcji mocy w zależności od $𝜏$ na przedziale $(0.5,\ 2)$ dla wszystkich trzech testów. Czy istnieje test jednostajnie najmocniejszy spośród nich
+
+```{r}
+#install.packages(c("gamlss.dist", "nortest", "moments"))
+
+library(gamlss.dist)
+library(nortest)
+library(moments)
+
+n <- 100 
+mu <- 2
+sigma <- 1
+nu <- 0
+taus <- seq(0.5, 2, by = 0.1)
+n_sim <- 1000 
+
+sinh_arcsinh <- function(x, tau, nu) {
+  sinh(tau * (asinh(x) + nu))
+}
+
+power_results <- matrix(0, nrow = length(taus), ncol = 3) 
+
+for (i in seq_along(taus)) {
+  tau <- taus[i]
+  rejections <- matrix(0, nrow = n_sim, ncol = 3)
+  
+  for (j in 1:n_sim) {
+    sample <- rnorm(n, mean = mu, sd = sigma)
+    transformed_sample <- sinh_arcsinh(sample, tau = tau, nu = nu)
+    
+    rejections[j, 1] <- ifelse(shapiro.test(transformed_sample)$p.value < 0.05, 1, 0)
+    
+    rejections[j, 2] <- ifelse(ad.test(transformed_sample)$p.value < 0.05, 1, 0)
+    
+    rejections[j, 3] <- ifelse(jarque.test(transformed_sample)$p.value < 0.05, 1, 0)
+  }
+  
+  power_results[i, ] <- colMeans(rejections)
+}
+
+plot(taus, power_results[, 1], type = "l", col = "red", lwd = 2,
+     xlab = expression(tau), ylab = "Moc testu",
+     main = "Funkcja mocy dla różnych testów")
+lines(taus, power_results[, 2], col = "blue", lwd = 2)
+lines(taus, power_results[, 3], col = "green", lwd = 2)
+legend("bottomright", legend = c("Shapiro-Wilk", "Anderson-Darling", "Jarque-Bera"),
+       col = c("red", "blue", "green"), lwd = 2)
+
+```
+
+#### Zadanie 2
+
+Mamy próbę $(X_1, ... X_{100})$ z rozkładu normalnego $𝒩 (2, 1)$ przekształconego przez transformatę Sinh-arcsinh z $𝜏 = 1$. Korzystając z symulacji Monte Carlo wykonaj wykres funkcji mocy w zależności od 𝜈 na przedziale $(−2, 2)$ dla wszystkich trzech testów. Czy istnieje test jednostajnie najmocniejszy spośród nich?
+
+```{r}
+
+tau <- 1
+nus <- seq(-2, 2, by = 0.1)
+power_results <- matrix(0, nrow = length(nus), ncol = 3)
+
+for (i in seq_along(nus)) {
+  nu <- nus[i]
+  rejections <- matrix(0, nrow = n_sim, ncol = 3)
+  
+  for (j in 1:n_sim) {
+    sample <- rnorm(n, mean = mu, sd = sigma)
+    transformed_sample <- sinh_arcsinh(sample, tau = tau, nu = nu)
+    
+    rejections[j, 1] <- ifelse(shapiro.test(transformed_sample)$p.value < 0.05, 1, 0)
+    
+    rejections[j, 2] <- ifelse(ad.test(transformed_sample)$p.value < 0.05, 1, 0)
+    
+    rejections[j, 3] <- ifelse(jarque.test(transformed_sample)$p.value < 0.05, 1, 0)
+  }
+  
+  power_results[i, ] <- colMeans(rejections)
+}
+
+```
+
+```{r}
+plot(nus, power_results[, 1], type = "l", col = "red", lwd = 2,
+     xlab = expression(nu), ylab = "Moc testu",
+     main = "Funkcja mocy dla różnych testów")
+lines(nus, power_results[, 2], col = "blue", lwd = 2)
+lines(nus, power_results[, 3], col = "green", lwd = 2)
+legend("topright", legend = c("Shapiro-Wilk", "Anderson-Darling", "Jarque-Bera"),
+       col = c("red", "blue", "green"), lwd = 2)
+```
+
+#### Zadanie 3
+
+Mamy próbę $(X_1, ... X_{100})$ taką, że zmienne losowe $𝑌_𝑖 = \frac{𝑋_𝑖−2}{1}$ są z rozkładu t-Studenta $𝒯 (𝜈)$. Korzystając z symulacji Monte Carlo wykonaj wykres funkcji mocy w zależności od 𝜈 na przedziale $(0.05, 20)$ dla wszystkich trzech testów. Czy istnieje test jednostajnie najmocniejszy spośród nich?
+
+```{r}
+library(nortest)
+library(tseries)
+
+n <- 100
+mc <- 1000
+alpha <- 0.05
+nus <- seq(0.05, 20, by = 0.05)
+
+power_results <- matrix(0, nrow = length(nus), ncol = 3)
+colnames(power_results) <- c("Shapiro-Wilk", "Anderson-Darling", "Jarque-Bera")
+
+for (i in seq_along(nus)) {
+  nu <- nus[i]
+  rejections <- matrix(0, nrow = mc, ncol = 3)
+  
+  for (j in 1:mc) {
+    Y <- rt(n, df = nu)
+    
+    rejections[j, 1] <- ifelse(shapiro.test(Y)$p.value < alpha, 1, 0)
+    
+    rejections[j, 2] <- ifelse(ad.test(Y)$p.value < alpha, 1, 0)
+    
+    rejections[j, 3] <- ifelse(jarque.bera.test(Y)$p.value < alpha, 1, 0)
+  }
+  
+  power_results[i, ] <- colMeans(rejections)
+}
+
+
+```
+
+```{r}
+plot(nus, power_results[, 1], type = "l", col = "red", lwd = 2,
+     xlab = expression(nu), ylab = "Moc testu",
+     main = "Funkcja mocy dla różnych testów")
+lines(nus, power_results[, 2], col = "blue", lwd = 2)
+lines(nus, power_results[, 3], col = "green", lwd = 2)
+legend("topright", legend = c("Shapiro-Wilk", "Anderson-Darling", "Jarque-Bera"),
+       col = c("red", "blue", "green"), lwd = 2)
+```
+
+```{r}
+```

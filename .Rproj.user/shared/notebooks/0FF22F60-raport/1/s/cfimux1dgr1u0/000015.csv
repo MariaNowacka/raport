@@ -1,0 +1,2 @@
+"0","legend(""topright"", legend = c(""Shapiro-Wilk"", ""Anderson-Darling"", ""Jarque-Bera""),"
+"0","       col = c(""red"", ""blue"", ""green""), lwd = 2)"
